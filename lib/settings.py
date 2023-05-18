@@ -19,7 +19,7 @@ MODEL_PATH = 'data/train/model.pkl'
 DATA_PATH = 'data/data.json'
 
 mlflow.set_tracking_uri('http://158.160.11.51:90/')
-mlflow.set_experiment('isachenko_bv_experiments')
+mlflow.set_experiment('bogdan_isachenko_experiments')
 
 RANDOM_SEED = 1
 random.seed(RANDOM_SEED)
