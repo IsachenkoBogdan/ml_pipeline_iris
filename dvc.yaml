@@ -1,9 +1,28 @@
 stages:
-  train:
-    cmd: PYTHONPATH="." python lib/train.py --config-path params.yaml
+  data_preprocess:
+    cmd:
+      - PYTHONPATH="." python lib/data_preprocess.py --config-path params.yaml
+    deps:
+      - lib/data_preprocess.py
+      - lib/helper_funcs.py
+      - lib/settings.py
     params:
       - train
+    outs:
+      - data/model.pkl
+      - data/data.json
+  train:
+    cmd:
+      - PYTHONPATH="." python lib/train.py --config-path params.yaml
+    params:
+      - train
+      - metrics
     deps:
+      - data/model.pkl
+      - data/data.json
+      - lib/data_preprocess.py
+      - lib/helper_funcs.py
+      - lib/settings.py
       - lib/train.py
     outs:
       - data/train
@@ -12,7 +31,13 @@ stages:
     cmd: PYTHONPATH="." python lib/eval.py --config-path params.yaml
     params:
       - eval
+      - metrics
     deps:
+      - data/model.pkl
+      - data/data.json
+      - lib/data_preprocess.py
+      - lib/helper_funcs.py
+      - lib/settings.py
       - lib/eval.py
       - data/train
     outs:

@@ -156,43 +156,124 @@ stages:
         mlflow_log:
           experiment_name: test1
           run_name: test_run_name
-  train:
-    cmd: PYTHONPATH="." python lib/train.py --config-path params.yaml
-    deps:
-    - path: lib/train.py
-      md5: a67c51ae561cf74f3eac2f584c8dbb5c
-      size: 2378
-    params:
-      params.yaml:
-        train:
-          test_size: 0.9
-    outs:
-    - path: data/train
-      md5: 20ba93585ac7732c3ce57ff29b680045.dir
-      size: 16130
-      nfiles: 4
   eval:
     cmd: PYTHONPATH="." python lib/eval.py --config-path params.yaml
     deps:
+    - path: data/data.json
+      md5: a9c979175425be3bb7a055f17aa7afbc
+      size: 3800
+    - path: data/model.pkl
+      md5: 669d312dfab916a55bbdc832ca777e2a
+      size: 347
     - path: data/train
-      md5: 20ba93585ac7732c3ce57ff29b680045.dir
-      size: 16130
-      nfiles: 4
+      md5: 04eab86ea7c33117dd8fc41fab94d9be.dir
+      size: 12648
+      nfiles: 3
+    - path: lib/data_preprocess.py
+      md5: 9314fe7ca25e2b03bd2038fa9e846027
+      size: 365
     - path: lib/eval.py
-      md5: 0182d6ec302c0f451b0f284ee7d6e3d3
-      size: 1100
+      md5: 2d25e6a470804a4b945c2fd341db3d92
+      size: 552
+    - path: lib/helper_funcs.py
+      md5: 4b5f2eea1fbaa7d5089c94ea039ca64e
+      size: 2155
+    - path: lib/settings.py
+      md5: e52a489acf099e1669bb54a1ead8a1bf
+      size: 1834
     params:
       params.yaml:
         eval:
-          metrics:
-          - precision
-          - recall
-          - accuracy
+        metrics:
+        - sklearn.metrics.precision_score:
+            average: macro
+        - sklearn.metrics.recall_score:
+            average: macro
+        - sklearn.metrics.accuracy_score
     outs:
     - path: data/eval
-      md5: 1c6160cb43e067815bf2c14fc137ed92.dir
-      size: 10791
+      md5: cc2f31509da5c51fa904f45b211bd41a.dir
+      size: 10739
       nfiles: 1
     - path: data/metrics.json
-      md5: 9b5b5d38d92b7e83182b739a14bcfdb7
-      size: 94
+      md5: 45c2b3bd5712d31deedeafc5d2977fbe
+      size: 113
+  data_preprocess:
+    cmd:
+    - PYTHONPATH="." python lib/data_preprocess.py --config-path params.yaml
+    deps:
+    - path: lib/data_preprocess.py
+      md5: 9314fe7ca25e2b03bd2038fa9e846027
+      size: 365
+    - path: lib/helper_funcs.py
+      md5: 4b5f2eea1fbaa7d5089c94ea039ca64e
+      size: 2155
+    - path: lib/settings.py
+      md5: e52a489acf099e1669bb54a1ead8a1bf
+      size: 1834
+    params:
+      params.yaml:
+        train:
+          test_size: 0.2
+          features:
+          - sepal length (cm)
+          - sepal width (cm)
+          - petal length (cm)
+          - petal width (cm)
+          model:
+            model_class: sklearn.tree.DecisionTreeClassifier
+            params:
+              min_samples_split: 2
+    outs:
+    - path: data/data.json
+      md5: a9c979175425be3bb7a055f17aa7afbc
+      size: 3800
+    - path: data/model.pkl
+      md5: 669d312dfab916a55bbdc832ca777e2a
+      size: 347
+  train:
+    cmd:
+    - PYTHONPATH="." python lib/train.py --config-path params.yaml
+    deps:
+    - path: data/data.json
+      md5: a9c979175425be3bb7a055f17aa7afbc
+      size: 3800
+    - path: data/model.pkl
+      md5: 669d312dfab916a55bbdc832ca777e2a
+      size: 347
+    - path: lib/data_preprocess.py
+      md5: 9314fe7ca25e2b03bd2038fa9e846027
+      size: 365
+    - path: lib/helper_funcs.py
+      md5: 4b5f2eea1fbaa7d5089c94ea039ca64e
+      size: 2155
+    - path: lib/settings.py
+      md5: e52a489acf099e1669bb54a1ead8a1bf
+      size: 1834
+    - path: lib/train.py
+      md5: 03aa82274eb88096fcb2041724b859ed
+      size: 740
+    params:
+      params.yaml:
+        metrics:
+        - sklearn.metrics.precision_score:
+            average: macro
+        - sklearn.metrics.recall_score:
+            average: macro
+        - sklearn.metrics.accuracy_score
+        train:
+          test_size: 0.2
+          features:
+          - sepal length (cm)
+          - sepal width (cm)
+          - petal length (cm)
+          - petal width (cm)
+          model:
+            model_class: sklearn.tree.DecisionTreeClassifier
+            params:
+              min_samples_split: 2
+    outs:
+    - path: data/train
+      md5: 04eab86ea7c33117dd8fc41fab94d9be.dir
+      size: 12648
+      nfiles: 3
