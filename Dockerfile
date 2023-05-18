@@ -7,6 +7,8 @@ WORKDIR app
 COPY ./requirements.txt  $WORKDIR/
 
 RUN pip3 install --no-cache-dir -r $WORKDIR/requirements.txt
+RUN git config --global user.name "IsachenkoBogdan"
+
 
 COPY . $WORKDIR
 
